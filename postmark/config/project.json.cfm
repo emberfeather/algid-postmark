@@ -11,6 +11,7 @@
 		]
 	},
 	"key": "postmark",
+	"path": "postmark/",
 	"plugin": "Postmark",
 	"prerequisites": {
 	},
