@@ -2,10 +2,12 @@
 	"applicationSingletons": {
 	},
 	"applicationTransients": {
+		"postmarkForPostmark": "plugins.postmark.inc.resource.utility.postmark"
 	},
 	"i18n": {
 		"locales": [
-			"en_US"
+			"en_US",
+			"en_PI"
 		]
 	},
 	"key": "postmark",
