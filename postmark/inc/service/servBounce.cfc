@@ -41,6 +41,10 @@
 				AND "postmarkID" = <cfqueryparam cfsqltype="cf_sql_bigint" value="#arguments.filter.postmarkID#" />
 			</cfif>
 			
+			<cfif structKeyExists(arguments.filter, 'email')>
+				AND "email" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.email#" />
+			</cfif>
+			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfdefaultcase>
