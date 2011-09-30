@@ -62,6 +62,21 @@ component {
 		return deserializeJson(local.apiResults.filecontent);
 	}
 	
+	public array function getBounceTags() {
+		local.items = listToArray(structKeyList(arguments.filter));
+		
+		// Send the request
+		http url="#variables.baseUrl#/bounce/tags" method="get" result="local.apiResults" {
+			httpparam type="header" name="Accept" value="application/json";
+			httpparam type="header" name="Content-type" value="application/json";
+			httpparam type="header" name="X-Postmark-Server-Token" value="#variables.apiKey#";
+		}
+		
+		__checkForErrors(local.apiResults, 'Failed to retreive bounce tags');
+		
+		return deserializeJson(local.apiResults.filecontent);
+	}
+	
 	public struct function getDeliveryStats() {
 		// Send the request
 		http url="#variables.baseUrl#/deliverystats" method="get" result="local.apiResults" {
