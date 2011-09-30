@@ -27,6 +27,19 @@ component {
 		return deserializeJson(local.apiResults.filecontent);
 	}
 	
+	public struct function getBounceDump(required numeric bounceID) {
+		// Send the request
+		http url="#variables.baseUrl#/bounces/#arguments.bounceID#/dump" method="get" result="local.apiResults" {
+			httpparam type="header" name="Accept" value="application/json";
+			httpparam type="header" name="Content-type" value="application/json";
+			httpparam type="header" name="X-Postmark-Server-Token" value="#variables.apiKey#";
+		}
+		
+		__checkForErrors(local.apiResults, 'Failed to retrieve bounce dump');
+		
+		return deserializeJson(local.apiResults.filecontent);
+	}
+	
 	public struct function getBounces(struct filter = {}, numeric count = 25, numeric offset = 0) {
 		local.items = listToArray(structKeyList(arguments.filter));
 		
