@@ -14,6 +14,19 @@ component {
 		arrayAppend(variables.messages, arguments.message);
 	}
 	
+	public struct function activateBounce(required numeric bounceID) {
+		// Send the request
+		http url="#variables.baseUrl#/bounces/#arguments.bounceID#/activate" method="put" result="local.apiResults" {
+			httpparam type="header" name="Accept" value="application/json";
+			httpparam type="header" name="Content-type" value="application/json";
+			httpparam type="header" name="X-Postmark-Server-Token" value="#variables.apiKey#";
+		}
+		
+		__checkForErrors(local.apiResults, 'Failed to retrieve bounce information');
+		
+		return deserializeJson(local.apiResults.filecontent);
+	}
+	
 	public struct function getBounce(required numeric bounceID) {
 		// Send the request
 		http url="#variables.baseUrl#/bounces/#arguments.bounceID#" method="get" result="local.apiResults" {
