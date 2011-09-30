@@ -5,6 +5,10 @@
 	
 	<cfset submission = deserializeJson(getHTTPRequestData().content) />
 	
+	<cfif not isDate(submission.bouncedAt)>
+		<cfset submission.bouncedAt = now() />
+	</cfif>
+	
 	<!--- Process the form submission --->
 	<cfset modelSerial.deserialize(submission, bounce) />
 	<cfset bounce.setPostmarkID(submission.id) />

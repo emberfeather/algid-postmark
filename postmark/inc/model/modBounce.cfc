@@ -29,7 +29,8 @@
 		
 		<!--- Bounced At --->
 		<cfset add__attribute(
-			attribute = 'bouncedAt'
+			attribute = 'bouncedAt',
+			defaultValue = now()
 		) />
 		
 		<!--- Details --->
