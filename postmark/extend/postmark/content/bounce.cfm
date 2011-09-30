@@ -5,6 +5,7 @@
 	
 	<cfset submission = deserializeJson(getHTTPRequestData().content) />
 	
+	<!--- TODO Remove when RFC datetime is fixed --->
 	<cfif not isDate(submission.bouncedAt)>
 		<cfset submission.bouncedAt = now() />
 	</cfif>
