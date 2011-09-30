@@ -22,11 +22,7 @@ component {
 			httpparam type="header" name="X-Postmark-Server-Token" value="#variables.apiKey#";
 		}
 		
-		if(local.apiResults.status_code != 200) {
-			local.apiError = deserializeJson(local.apiResults.fileContent);
-			
-			throw(message="Failed to send emails", detail="#local.apiError.message#", errorcode="#local.apiError.errorcode#");
-		}
+		__checkForErrors(local.apiResults, 'Failed to retrieve bounce information');
 		
 		return deserializeJson(local.apiResults.filecontent);
 	}
@@ -48,11 +44,7 @@ component {
 			}
 		}
 		
-		if(local.apiResults.status_code != 200) {
-			local.apiError = deserializeJson(local.apiResults.fileContent);
-			
-			throw(message="Failed to send emails", detail="#local.apiError.message#", errorcode="#local.apiError.errorcode#");
-		}
+		__checkForErrors(local.apiResults, 'Failed to retreive bounced messages');
 		
 		return deserializeJson(local.apiResults.filecontent);
 	}
@@ -65,11 +57,7 @@ component {
 			httpparam type="header" name="X-Postmark-Server-Token" value="#variables.apiKey#";
 		}
 		
-		if(local.apiResults.status_code != 200) {
-			local.apiError = deserializeJson(local.apiResults.fileContent);
-			
-			throw(message="Failed to send emails", detail="#local.apiError.message#", errorcode="#local.apiError.errorcode#");
-		}
+		__checkForErrors(local.apiResults, 'Failed to retrieve delivery statistics');
 		
 		return deserializeJson(local.apiResults.filecontent);
 	}
@@ -83,6 +71,17 @@ component {
 		variables.results = [];
 		
 		return local.currentResults;
+	}
+	
+	/**
+	 * Checks for API errors
+	 **/
+	private void function __checkForErrors( required struct response, string message = 'Failed to communicate with Postmark' ) {
+		if(arguments.response.status_code != 200) {
+			local.apiError = deserializeJson(arguments.response.fileContent);
+			
+			throw(message="#arguments.message#", detail="#local.apiError.message#", errorcode="#local.apiError.errorcode#");
+		}
 	}
 	
 	/**
@@ -112,11 +111,7 @@ component {
 				httpparam type="body" encoded="no" value="#serializeJson(local.batch)#";
 			}
 			
-			if(local.apiResults.status_code != 200) {
-				local.apiError = deserializeJson(local.apiResults.fileContent);
-				
-				throw(message="Failed to send emails", detail="#local.apiError.message#", errorcode="#local.apiError.errorcode#");
-			}
+			__checkForErrors(local.apiResults, 'Failed to send emails');
 			
 			local.apiResultMessages = deserializeJson(local.apiResults.filecontent);
 			
