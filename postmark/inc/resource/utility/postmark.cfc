@@ -14,7 +14,24 @@ component {
 		arrayAppend(variables.messages, arguments.message);
 	}
 	
-	public struct function getBounces(struct filter = {}, count = 25, offset = 0) {
+	public struct function getBounce(required numeric bounceID) {
+		// Send the request
+		http url="#variables.baseUrl#/bounces/#arguments.bounceID#" method="get" result="local.apiResults" {
+			httpparam type="header" name="Accept" value="application/json";
+			httpparam type="header" name="Content-type" value="application/json";
+			httpparam type="header" name="X-Postmark-Server-Token" value="#variables.apiKey#";
+		}
+		
+		if(local.apiResults.status_code != 200) {
+			local.apiError = deserializeJson(local.apiResults.fileContent);
+			
+			throw(message="Failed to send emails", detail="#local.apiError.message#", errorcode="#local.apiError.errorcode#");
+		}
+		
+		return deserializeJson(local.apiResults.filecontent);
+	}
+	
+	public struct function getBounces(struct filter = {}, numeric count = 25, numeric offset = 0) {
 		local.items = listToArray(structKeyList(arguments.filter));
 		
 		// Send the request
