@@ -2,6 +2,7 @@ component {
 	public component function init( required string apiKey, numeric threshold = 500 ) {
 		variables.apiKey = arguments.apiKey;
 		variables.threshold = arguments.threshold;
+		variables.baseUrl = 'https://api.postmarkapp.com';
 		
 		variables.messages = [];
 		variables.results = [];
@@ -11,6 +12,49 @@ component {
 	
 	public void function addMessage(required struct message) {
 		arrayAppend(variables.messages, arguments.message);
+	}
+	
+	public struct function getBounces(struct filter = {}, count = 25, offset = 0) {
+		local.items = listToArray(structKeyList(arguments.filter));
+		
+		// Send the request
+		http url="#variables.baseUrl#/bounces" method="get" result="local.apiResults" {
+			httpparam type="header" name="Accept" value="application/json";
+			httpparam type="header" name="Content-type" value="application/json";
+			httpparam type="header" name="X-Postmark-Server-Token" value="#variables.apiKey#";
+			
+			httpparam type="url" name="count" value="#arguments.count#";
+			httpparam type="url" name="offset" value="#arguments.offset#";
+			
+			for(local.i in local.items) {
+				httpparam type="url" name="#local.i#" value="#arguments.filter[local.i]#";
+			}
+		}
+		
+		if(local.apiResults.status_code != 200) {
+			local.apiError = deserializeJson(local.apiResults.fileContent);
+			
+			throw(message="Failed to send emails", detail="#local.apiError.message#", errorcode="#local.apiError.errorcode#");
+		}
+		
+		return deserializeJson(local.apiResults.filecontent);
+	}
+	
+	public struct function getDeliveryStats() {
+		// Send the request
+		http url="#variables.baseUrl#/deliverystats" method="get" result="local.apiResults" {
+			httpparam type="header" name="Accept" value="application/json";
+			httpparam type="header" name="Content-type" value="application/json";
+			httpparam type="header" name="X-Postmark-Server-Token" value="#variables.apiKey#";
+		}
+		
+		if(local.apiResults.status_code != 200) {
+			local.apiError = deserializeJson(local.apiResults.fileContent);
+			
+			throw(message="Failed to send emails", detail="#local.apiError.message#", errorcode="#local.apiError.errorcode#");
+		}
+		
+		return deserializeJson(local.apiResults.filecontent);
 	}
 	
 	public array function send() {
@@ -44,7 +88,7 @@ component {
 			}
 			
 			// Send the batch
-			http url="https://api.postmarkapp.com/email/batch" method="post" result="local.apiResults" {
+			http url="#variables.baseUrl#/email/batch" method="post" result="local.apiResults" {
 				httpparam type="header" name="Accept" value="application/json";
 				httpparam type="header" name="Content-type" value="application/json";
 				httpparam type="header" name="X-Postmark-Server-Token" value="#variables.apiKey#";
