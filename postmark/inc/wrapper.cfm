@@ -42,5 +42,5 @@
 <cfif fileExists(destination)>
 	<cfinclude template="#destination#" />
 <cfelse>
-	<cfthrow message="Unable to find postmark handler #destination#" />
+	<cfthrow message="Unable to find postmark handler" detail="Could not find the handler in #destination#" />
 </cfif>
