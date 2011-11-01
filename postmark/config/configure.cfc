@@ -110,6 +110,19 @@
 			COMMENT ON TABLE "#variables.datasource.prefix#postmark"."bounce" IS 'Postmark bounces.';
 		</cfquery>
 	</cffunction>
+	
+	<!---
+		Configures the database for v0.1.1
+	--->
+	<cffunction name="postgreSQL0_1_1" access="public" returntype="void" output="false">
+		<!---
+			Timestamps
+		--->
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#postmark"."bounce" ALTER "bouncedAt" TYPE timestamp with time zone;
+		</cfquery>
+	</cffunction>
 <cfscript>
 	public void function update( required struct plugin, string installedVersion = '' ) {
 		var versions = createObject('component', 'algid.inc.resource.utility.version').init();
@@ -119,6 +132,18 @@
 			switch (variables.datasource.type) {
 			case 'PostgreSQL':
 				postgreSQL0_1_0();
+				
+				break;
+			default:
+				throw(message="Database Type Not Supported", detail="The #variables.datasource.type# database type is not currently supported");
+			}
+		}
+		
+		// => 0.1.
+		if (versions.compareVersions(arguments.installedVersion, '0.1.1') lt 0) {
+			switch (variables.datasource.type) {
+			case 'PostgreSQL':
+				postgreSQL0_1_1();
 				
 				break;
 			default:
